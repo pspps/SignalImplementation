@@ -10,6 +10,11 @@ import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 import org.whispersystems.libsignal.util.KeyHelper;
 import org.whispersystems.libsignal.util.Medium;
 
+import java.io.IOException;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.UnrecoverableEntryException;
+import java.security.cert.CertificateException;
 import java.util.*;
 
 public class Encryption {
@@ -20,8 +25,8 @@ public class Encryption {
     private static Map<SignalProtocolAddress, Pair<Integer,Pair<ECPublicKey,byte[]>>> signedKeys = new HashMap<SignalProtocolAddress, Pair<Integer, Pair<ECPublicKey, byte[]>>>();
     private static Map<SignalProtocolAddress, List<PreKeyBundle>> oneTimeKeys = new HashMap<SignalProtocolAddress, List<PreKeyBundle>>();
 
-    public Encryption(SignalProtocolAddress myAdress) {
-        store = new MySignalProtocolStore();
+    public Encryption(SignalProtocolAddress myAdress) throws CertificateException, UnrecoverableEntryException, NoSuchAlgorithmException, KeyStoreException, IOException {
+        store = MySignalProtocolStore.getInstance();
         this.myAddress = myAdress;
     }
 
