@@ -3,10 +3,11 @@ import org.whispersystems.libsignal.state.PreKeyRecord;
 import org.whispersystems.libsignal.state.PreKeyStore;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class MyPreKeyStore implements PreKeyStore {
+public class MyPreKeyStore implements PreKeyStore, Serializable {
 
     private final Map<Integer, byte[]> store = new HashMap<Integer, byte[]>();
 

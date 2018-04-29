@@ -25,7 +25,7 @@ public class Encryption {
     private static Map<SignalProtocolAddress, Pair<Integer,Pair<ECPublicKey,byte[]>>> signedKeys = new HashMap<SignalProtocolAddress, Pair<Integer, Pair<ECPublicKey, byte[]>>>();
     private static Map<SignalProtocolAddress, List<PreKeyBundle>> oneTimeKeys = new HashMap<SignalProtocolAddress, List<PreKeyBundle>>();
 
-    public Encryption(SignalProtocolAddress myAdress) throws CertificateException, UnrecoverableEntryException, NoSuchAlgorithmException, KeyStoreException, IOException {
+    public Encryption(SignalProtocolAddress myAdress) throws IOException, ClassNotFoundException {
         store = MySignalProtocolStore.getInstance();
         this.myAddress = myAdress;
     }

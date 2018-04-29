@@ -10,15 +10,14 @@ import org.whispersystems.libsignal.state.SessionRecord;
 import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 import org.whispersystems.libsignal.util.KeyHelper;
 
-import java.io.IOException;
+import java.io.*;
 import java.security.KeyStore;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
-import java.security.UnrecoverableEntryException;
 import java.security.cert.CertificateException;
 import java.util.List;
 
-public class MySignalProtocolStore implements SignalProtocolStore, KeyStore.Entry {
+public class MySignalProtocolStore implements SignalProtocolStore, Serializable {
 
     private final MyPreKeyStore       preKeyStore       = new MyPreKeyStore();
     private final MySessionStore      sessionStore      = new MySessionStore();
@@ -27,16 +26,23 @@ public class MySignalProtocolStore implements SignalProtocolStore, KeyStore.Entr
     private final MyIdentityKeyStore  identityKeyStore;
 
 
-    private static final String STORE_ENTRY_NAME = "JayPadIdentityStore";
-    private static final KeyStore.ProtectionParameter STORE_PASSWD = new KeyStore.PasswordProtection("T0t0 j9 sup9r t@jné h9sl0!".toCharArray());
+    private static final String STORE_FILENAME = "JayPadKeyStore";
 
 
-    public static MySignalProtocolStore getInstance() throws CertificateException, NoSuchAlgorithmException, KeyStoreException, IOException, UnrecoverableEntryException {
-        KeyStore st = getKeyStore();
-        if (st.containsAlias(STORE_ENTRY_NAME)) {
-            return (MySignalProtocolStore)st.getEntry(STORE_ENTRY_NAME, STORE_PASSWD);
+    public static MySignalProtocolStore getInstance() throws IOException, ClassNotFoundException {
+        File f = new File(STORE_FILENAME);
+        MySignalProtocolStore ret;
+        if (f.exists()) {
+            FileInputStream fis = new FileInputStream(f);
+            ObjectInputStream is = new ObjectInputStream(fis);
+            ret = (MySignalProtocolStore) is.readObject();
+            is.close();
+            fis.close();
+            return ret;
         }
-        return new MySignalProtocolStore();
+        ret = new MySignalProtocolStore();
+        ret.updateStorage();
+        return ret;
     }
 
     public IdentityKeyPair getIdentityKeyPair() {
@@ -144,26 +150,20 @@ public class MySignalProtocolStore implements SignalProtocolStore, KeyStore.Entr
     }
 
     private void updateStorage() {
-        //TODO add exception handling
-        KeyStore ks = null;
+        File f = new File(STORE_FILENAME);
+        FileOutputStream fout = null;
+        //TODO exception handling
         try {
-            ks = getKeyStore();
-            ks.setEntry(STORE_ENTRY_NAME,this,STORE_PASSWD);
-        } catch (KeyStoreException e) {
-            e.printStackTrace();
-        } catch (CertificateException e) {
-            e.printStackTrace();
-        } catch (NoSuchAlgorithmException e) {
+            fout = new FileOutputStream(f);
+            ObjectOutputStream out = new ObjectOutputStream(fout);
+            out.writeObject(this);
+            out.close();
+            fout.close();
+        } catch (FileNotFoundException e) {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private static KeyStore getKeyStore() throws KeyStoreException, CertificateException, NoSuchAlgorithmException, IOException {
-        KeyStore ks = KeyStore.getInstance("AndroidKeyStore");
-        ks.load(null);
-        return ks;
     }
 }
 

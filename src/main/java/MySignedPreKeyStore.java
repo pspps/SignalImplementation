@@ -3,12 +3,13 @@ import org.whispersystems.libsignal.state.SignedPreKeyRecord;
 import org.whispersystems.libsignal.state.SignedPreKeyStore;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-public class MySignedPreKeyStore implements SignedPreKeyStore {
+public class MySignedPreKeyStore implements SignedPreKeyStore, Serializable {
 
     private final Map<Integer, byte[]> store = new HashMap<Integer, byte[]>();
 
