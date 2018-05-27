@@ -1,7 +1,4 @@
-import org.whispersystems.libsignal.InvalidKeyException;
-import org.whispersystems.libsignal.SessionBuilder;
-import org.whispersystems.libsignal.SessionCipher;
-import org.whispersystems.libsignal.SignalProtocolAddress;
+import org.whispersystems.libsignal.*;
 import org.whispersystems.libsignal.ecc.Curve;
 import org.whispersystems.libsignal.ecc.ECKeyPair;
 import org.whispersystems.libsignal.protocol.CiphertextMessage;
@@ -80,6 +77,7 @@ public class Main {
             Encryption.cleanLocal();
         }
         catch (Exception e) {
+            e.printStackTrace();
             System.out.printf("Nieco je velmi zle '%s'...\n", e.getMessage());
         }
 
@@ -101,7 +99,8 @@ public class Main {
 
 
             String alicaMsgOutCl = "Ahoj, ja som ALica";
-            byte[] alicaMsgOutCipher = alickaEnc.encrypt(BOB_ADDRESS, alicaMsgOutCl.getBytes());
+            byte[] alicaMsgOutCipher = new byte[0];
+            alicaMsgOutCipher = alickaEnc.encrypt(BOB_ADDRESS, alicaMsgOutCl.getBytes());
             String bobMsgOutCl = "Nazdar, ja som Bob";
             byte[] bobMsgOutCipher = bobikEnc.encrypt(ALICE_ADDRESS, bobMsgOutCl.getBytes());
 
@@ -122,12 +121,37 @@ public class Main {
             removeFile(ALICA_STORENAME);
             removeFile(BOB_STORENAME);
             Encryption.cleanLocal();
+        } catch (UntrustedIdentityException e) {
+            e.printStackTrace();
+            System.out.printf("Jeden z uzivatelovych klucov s nazvom identitykey by sa nikdy nemal zmenit. Ak sa zmeni, moze to znamenat ze nieco nieje v poriadku. Vtedi sa vyhodi tato vynimka.\n '%s'...\n", e.getMessage());
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+            System.out.printf("Indikuje zle formatovanie alebo skor poskodenie casti hlaviky spravi, ktora obsahuje kluce. Pri odosielani indikuje inkonzistenciu medzi lokalne ulozenimi klucmi a klucmi na serveri '%s'...\n", e.getMessage());
+        } catch (InvalidKeyIdException e) {
+            e.printStackTrace();
+            System.out.printf("Tato vynimka ukazuje nekonzistenciu klucov medzi tym, co je ulozene na servery alebo lokalne u uzivatela a tym, co odoslal odosielatel v hlavicke '%s'...\n", e.getMessage());
+        } catch (LegacyMessageException e) {
+            e.printStackTrace();
+            System.out.printf("Sprava pochadza z nepodporovanej verzie signal protokolu '%s'...\n", e.getMessage());
+        } catch (InvalidMessageException e) {
+            e.printStackTrace();
+            System.out.printf("Relativne genericka vynimka. Primarne indikuje poskodenie spravi, ale moze sa objavit napriklad aj ked nieje inicializovana session, co moze ukazovat na nejake interne chybi. '%s'...\n", e.getMessage());
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            System.out.printf("Chyba pri nacitavani lokalne ulozenej databazi zo suboru. Je to vynimka so strandarnej kniznice javy, konkretne FileInputStream.readObject(). Indikuje ze sa zmenil nazov alebo obsah nacitanej triedi voci aktualnej implementiacii. '%s'...\n", e.getMessage());
+        } catch (InvalidVersionException e) {
+            e.printStackTrace();
+            System.out.printf("Ukazuje na spravu s verzie kniznice ktora je vissia ako aktualna. '%s'...\n", e.getMessage());
+        } catch (DuplicateMessageException e) {
+            e.printStackTrace();
+            System.out.printf("Hovori, ze tuto spravu sme uz spracovali. Toto moze znacit tzv. replay attack. '%s'...\n", e.getMessage());
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.printf("Chyba pri praci so suborom. '%s'...\n", e.getMessage());
+        } catch (NoSessionException e) {
+            e.printStackTrace();
+            System.out.printf("Ukazuje ze nebola vytvorena session. Z najvetsou pravdepodobnostou by to znamenalo chybu v mojom kode. '%s'...\n", e.getMessage());
         }
-        catch (Exception e) {
-            System.out.printf("Nieco je velmi zle '%s'...\n", e.getMessage());
-        }
-
-
 
 
         try {
