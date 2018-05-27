@@ -26,11 +26,15 @@ public class MySignalProtocolStore implements SignalProtocolStore, Serializable 
     private final MyIdentityKeyStore  identityKeyStore;
 
 
-    private static final String STORE_FILENAME = "JayPadKeyStore";
-
+    private String STORE_FILENAME;
 
     public static MySignalProtocolStore getInstance() throws IOException, ClassNotFoundException {
-        File f = new File(STORE_FILENAME);
+        return getInstance("JayPadKeyStore");
+    }
+
+    //PUBLIC for test purposes only
+    public static MySignalProtocolStore getInstance(String storeName) throws IOException, ClassNotFoundException {
+        File f = new File(storeName);
         MySignalProtocolStore ret;
         if (f.exists()) {
             FileInputStream fis = new FileInputStream(f);
@@ -40,7 +44,7 @@ public class MySignalProtocolStore implements SignalProtocolStore, Serializable 
             fis.close();
             return ret;
         }
-        ret = new MySignalProtocolStore();
+        ret = new MySignalProtocolStore(storeName);
         ret.updateStorage();
         return ret;
     }
@@ -130,11 +134,12 @@ public class MySignalProtocolStore implements SignalProtocolStore, Serializable 
         updateStorage();
     }
 
-    private MySignalProtocolStore() {
-        this(generateIdentityKeyPair(), generateRegistrationId());
+    private MySignalProtocolStore(String storeName) {
+        this(generateIdentityKeyPair(), generateRegistrationId(), storeName);
     }
 
-    private MySignalProtocolStore(IdentityKeyPair identityKeyPair, int registrationId) {
+    private MySignalProtocolStore(IdentityKeyPair identityKeyPair, int registrationId, String storeName) {
+        this.STORE_FILENAME = storeName;
         this.identityKeyStore = new MyIdentityKeyStore(identityKeyPair, registrationId);
     }
 
@@ -159,8 +164,6 @@ public class MySignalProtocolStore implements SignalProtocolStore, Serializable 
             out.writeObject(this);
             out.close();
             fout.close();
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }

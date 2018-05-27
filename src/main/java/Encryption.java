@@ -30,6 +30,19 @@ public class Encryption {
         this.myAddress = myAdress;
     }
 
+    //PUBLIC for test purposes only
+    public Encryption(SignalProtocolAddress myAdress, String storeName) throws IOException, ClassNotFoundException {
+        store = MySignalProtocolStore.getInstance(storeName);
+        this.myAddress = myAdress;
+    }
+
+    //PUBLIC for test purposes only
+    public static void cleanLocal(){
+        identityKeys = new HashMap<SignalProtocolAddress, IdentityKey>();
+        signedKeys = new HashMap<SignalProtocolAddress, Pair<Integer, Pair<ECPublicKey, byte[]>>>();
+        oneTimeKeys = new HashMap<SignalProtocolAddress, List<PreKeyBundle>>();
+    }
+
     public void sendIdentityKey() {
         //Needs to be called install time
         sendIdentityKey(store.getIdentityKeyPair().getPublicKey());
@@ -94,7 +107,7 @@ public class Encryption {
 
     private void sendIdentityKey(IdentityKey key) {
         //TODO implement me
-        System.out.printf("Sending identity key to server\n");
+        //System.out.printf("Sending identity key to server\n");
 
         assert (!identityKeys.containsKey(myAddress));
         identityKeys.put(myAddress, key);
@@ -102,7 +115,7 @@ public class Encryption {
 
     private void sendSignedPrekey(Integer i, ECPublicKey key, byte[] signature) throws InvalidKeyException {
         //TODO implement me
-        System.out.printf("Sending signed pre key to server\n");
+        //System.out.printf("Sending signed pre key to server\n");
 
         if (signedKeys.containsKey(myAddress))
             signedKeys.remove(myAddress);
@@ -112,7 +125,7 @@ public class Encryption {
 
     private void sendPrekey(List<Pair<Integer,ECPublicKey>> keys) {
         //TODO implement me
-        System.out.printf("Sending signed pre key to server\n");
+        //System.out.printf("Sending signed pre key to server\n");
 
         List<PreKeyBundle> to_add = new LinkedList<PreKeyBundle>();
 
