@@ -157,6 +157,109 @@ public class Main {
         }
 
 
+
+
+        try {
+            final String TEST_NAME = "Persistent storage test";
+            final String ALICA_STORENAME = "alicaStore.dat";
+            final String BOB_STORENAME = "bobStore.dat";
+
+            System.out.printf("Pustam test z názvom '%s'\n", TEST_NAME);
+
+            Encryption alickaEnc = initUser(ALICA_STORENAME,ALICE_ADDRESS);
+            Encryption bobikEnc = initUser(BOB_STORENAME,BOB_ADDRESS);
+
+
+
+
+
+
+
+            String alicaMsgOutCl = "Ahoj, ja som ALica";
+            byte[] alicaMsgOutCipher = alickaEnc.encrypt(BOB_ADDRESS, alicaMsgOutCl.getBytes());
+
+            Encryption alickaEnc2 = new Encryption(ALICE_ADDRESS, ALICA_STORENAME);
+            Encryption bobikEnc2 = new Encryption(BOB_ADDRESS, BOB_STORENAME);
+
+
+            String bobMsgInCl = new String(bobikEnc.decrypt(ALICE_ADDRESS, alicaMsgOutCipher));
+            assert (bobMsgInCl.equals(alicaMsgOutCl));
+
+            String bobMsgOutCl = "Nazdar, ja som Bob";
+            byte[] bobMsgOutCipher = bobikEnc2.encrypt(ALICE_ADDRESS, bobMsgOutCl.getBytes());
+
+            String alicaMsgInCl = new String(alickaEnc2.decrypt(BOB_ADDRESS, bobMsgOutCipher));
+            assert (alicaMsgInCl.equals(bobMsgOutCl));
+
+
+
+
+
+
+            System.out.printf("Skoncil test z názvom '%s'\n\n", TEST_NAME);
+
+            removeFile(ALICA_STORENAME);
+            removeFile(BOB_STORENAME);
+            Encryption.cleanLocal();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            System.out.printf("Nieco je velmi zle '%s'...\n", e.getMessage());
+        }
+
+
+
+        try {
+            final String TEST_NAME = "Rotate keys test";
+            final String ALICA_STORENAME = "alicaStore.dat";
+            final String BOB_STORENAME = "bobStore.dat";
+
+            System.out.printf("Pustam test z názvom '%s'\n", TEST_NAME);
+
+            Encryption alickaEnc = initUser(ALICA_STORENAME,ALICE_ADDRESS);
+            Encryption bobikEnc = initUser(BOB_STORENAME,BOB_ADDRESS);
+
+
+
+
+
+
+
+            String alicaMsgOutCl = "Ahoj, ja som ALica";
+            byte[] alicaMsgOutCipher = alickaEnc.encrypt(BOB_ADDRESS, alicaMsgOutCl.getBytes());
+
+            String bobMsgInCl = new String(bobikEnc.decrypt(ALICE_ADDRESS, alicaMsgOutCipher));
+            assert (bobMsgInCl.equals(alicaMsgOutCl));
+
+            alickaEnc.rotateSingnedPreKey();
+            alickaEnc.addOnetimePreKeys(10);
+            bobikEnc.rotateSingnedPreKey();
+            bobikEnc.addOnetimePreKeys(10);
+
+            String bobMsgOutCl = "Nazdar, ja som Bob";
+            byte[] bobMsgOutCipher = bobikEnc.encrypt(ALICE_ADDRESS, bobMsgOutCl.getBytes());
+
+            String alicaMsgInCl = new String(alickaEnc.decrypt(BOB_ADDRESS, bobMsgOutCipher));
+            assert (alicaMsgInCl.equals(bobMsgOutCl));
+
+
+
+
+
+
+            System.out.printf("Skoncil test z názvom '%s'\n\n", TEST_NAME);
+
+            removeFile(ALICA_STORENAME);
+            removeFile(BOB_STORENAME);
+            Encryption.cleanLocal();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+            System.out.printf("Nieco je velmi zle '%s'...\n", e.getMessage());
+        }
+
+
+
         try {
             final String TEST_NAME = "Test binarnych hodnot";
             final String ALICA_STORENAME = "alicaStore.dat";
