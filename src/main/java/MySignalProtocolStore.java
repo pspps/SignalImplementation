@@ -165,7 +165,7 @@ public class MySignalProtocolStore implements SignalProtocolStore, Serializable 
             out.close();
             fout.close();
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new RuntimeException(e);
         }
     }
 }

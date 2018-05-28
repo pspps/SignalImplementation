@@ -148,6 +148,9 @@ public class Main {
         } catch (IOException e) {
             e.printStackTrace();
             System.out.printf("Chyba pri praci so suborom. '%s'...\n", e.getMessage());
+        } catch (RuntimeException e) {
+            e.printStackTrace();
+            System.out.printf("Chyba pri praci so suborom. '%s'...\n", e.getMessage());
         } catch (NoSessionException e) {
             e.printStackTrace();
             System.out.printf("Ukazuje ze nebola vytvorena session. Z najvetsou pravdepodobnostou by to znamenalo chybu v mojom kode. '%s'...\n", e.getMessage());
